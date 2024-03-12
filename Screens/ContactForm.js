@@ -112,7 +112,6 @@ const ContactForm = ({ navigation, route }) => {
 
 				const newPhoneNumber = editContact.phoneNumber;
 
-				// Check if the new phone number is unique, excluding the current contact being edited
 				const isPhoneNumberUnique = existingContacts.every(
 					(contact) =>
 						contact.id === editContact.id ||
