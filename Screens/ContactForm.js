@@ -12,10 +12,14 @@ import {
 	Keyboard,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from 'expo-image-picker';
 import { MaterialCommunityIcons } from "react-native-vector-icons";
 import { useNavigation } from '@react-navigation/native';
 
 const ContactForm = ({ navigation, route }) => {
+
+	const [image, setImage] = useState();
+
 	const {
 		contactEdit = {
 			id: "",
@@ -32,7 +36,7 @@ const ContactForm = ({ navigation, route }) => {
 		firstName: "",
 		lastName: "",
 		phoneNumber: "",
-		photo: require("../assets/images/user1.png"),
+		photo: image,
 	});
 
 	const [editContact, setEditContact] = useState({
@@ -80,7 +84,7 @@ const ContactForm = ({ navigation, route }) => {
 
 
 			
-			 const updatedContactsList = sortContacts([...existingContacts, { ...contact, id }]);
+			 const updatedContactsList = sortContacts([...existingContacts, { ...contact, id, photo: image }]);
 
 			 
 			await AsyncStorage.setItem(
@@ -127,7 +131,7 @@ const ContactForm = ({ navigation, route }) => {
 							firstName: editContact.firstName,
 							lastName: editContact.lastName,
 							phoneNumber: editContact.phoneNumber,
-							photo: require("../assets/images/user1.png"),
+							photo: image,
 						};
 					} else {
 						return item;
@@ -228,6 +232,24 @@ const ContactForm = ({ navigation, route }) => {
 		}
 	};
 
+	const pickImage = async () => {
+		// No permissions request is necessary for launching the image library
+		let result = await ImagePicker.launchImageLibraryAsync({
+		  mediaTypes: ImagePicker.MediaTypeOptions.All,
+		  allowsEditing: true,
+		  aspect: [4, 3],
+		  quality: 1,
+		});
+	
+		console.log(result);
+	
+		if (!result.canceled) {
+		  setImage(result.assets[0].uri);
+		}
+	  };
+	
+	
+
 	const navigations = useNavigation();
 
 	const handleGoBack = () => {
@@ -270,9 +292,9 @@ const ContactForm = ({ navigation, route }) => {
 					{isCreating ? (
 						<View style={styles.formView}>
 							<View style={styles.photoContainer}>
-								<Image source={contact.photo} style={styles.photo} />
+								{image ? <Image source={{ uri: image }} style={styles.setPhoto} /> :<Image source={contact.photo} style={styles.photo} />}
 							</View>
-							<TouchableOpacity style={styles.addPhoto}>
+							<TouchableOpacity style={styles.addPhoto} onPress={pickImage}>
 								<Text style={styles.addPhotoText}>Add Photo</Text>
 							</TouchableOpacity>
 							<View style={styles.inCont}>
@@ -305,9 +327,9 @@ const ContactForm = ({ navigation, route }) => {
 					) : (
 						<View style={styles.formView}>
 							<View style={styles.photoContainer}>
-								<Image source={editContact.photo} style={styles.photo} />
+								{image ? <Image source={{ uri: image }} style={styles.setPhoto} /> :<Image source={editContact.photo} style={styles.photo} />}
 							</View>
-							<TouchableOpacity style={styles.addPhoto}>
+							<TouchableOpacity style={styles.addPhoto} onPress={pickImage}>
 								<Text style={styles.addPhotoText}>Add Photo</Text>
 							</TouchableOpacity>
 							<View style={styles.inCont}>
@@ -477,6 +499,13 @@ const styles = StyleSheet.create({
 		borderColor: "rgba(100,100,100,0.2)",
 		backgroundColor: "rgba(100,100,100,0.2)",
 		padding: 2,
+	},
+	setPhoto:{
+		width: "100%",
+		height: "100%",
+		borderRadius: 160,
+		borderWidth:1,
+		borderColor:"rgba(200,200,200,1)",
 	},
 });
 
