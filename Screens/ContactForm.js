@@ -17,8 +17,8 @@ import { MaterialCommunityIcons } from "react-native-vector-icons";
 import { useNavigation } from '@react-navigation/native';
 
 const ContactForm = ({ navigation, route }) => {
-
-	const [image, setImage] = useState();
+	const defaultImage = require("../assets/images/user1.png");
+	const [image, setImage] = useState(defaultImage);
 
 	const {
 		contactEdit = {
